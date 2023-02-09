@@ -1,0 +1,5 @@
+matteociaroni-unshort-urls:
+  admin:
+    settings:
+      domains_label: Domains
+      domains_help: Write all the domains to unshort (separated by comma ",")

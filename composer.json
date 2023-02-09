@@ -1,0 +1,55 @@
+{
+    "name": "matteociaroni/flarum-unshort-urls",
+    "description": "Unshort shortened URLs",
+    "keywords": [
+        "flarum"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^1.6.0",
+      "ext-curl": "*"
+    },
+    "authors": [
+        {
+            "name": "Matteo Ciaroni",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MatteoCiaroni\\UnShortURLs\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "UnShort URLs",
+            "category": "",
+            "icon": {
+                "name": "fas fa-expand",
+                "color": "white",
+                "backgroundColor": "#ff8300"
+            }
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": false,
+                "js": true,
+                "jsCommon": false,
+                "css": false,
+                "locale": true,
+                "gitConf": false,
+                "githubActions": false,
+                "prettier": false,
+                "typescript": true,
+                "bundlewatch": false,
+                "backendTesting": false,
+                "editorConfig": false,
+                "styleci": false
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
