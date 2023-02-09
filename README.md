@@ -9,6 +9,7 @@ After the user creates a new post or a new discussion, the extension replaces im
 
 It is possible to customize the list of shortened URL domains in the settings page.
 
+![Settings](https://raw.githubusercontent.com/matteociaroni/flarum-unshort-urls/master/settings.png)
 
 ## Installation
 
