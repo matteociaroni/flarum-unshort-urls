@@ -22,7 +22,7 @@ class ChangePostText
 		{
 			$domains = explode(",", $this->settings->get("matteociaroni-unshort-urls.domains"));
 			$domains = array_map(function($domain) {return trim($domain);}, $domains); // trim all domains
-			$newText = (new URLunshortener($domains))->parseText($oldText);
+			$newText = (new UnShortURLs($domains))->replaceURLs($oldText);
 			$event->post->content = $newText;
 		}
 	}

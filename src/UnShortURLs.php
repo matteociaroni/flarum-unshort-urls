@@ -2,7 +2,7 @@
 
 namespace MatteoCiaroni\UnShortURLs;
 
-class URLunshortener
+class UnShortURLs
 {
 	/**
 	 * Domains to unshort
@@ -57,7 +57,7 @@ class URLunshortener
 	 * @param string $text
 	 * @return string
 	 */
-	public function parseText(string $text): string
+	public function replaceURLs(string $text): string
 	{
 		preg_match_all(self::$urlRegEx, $text, $urls);
 
