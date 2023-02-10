@@ -17,11 +17,27 @@ class UnShortURLs
 	protected static string $urlRegEx = "/https?:\/\/([^\/\s]+)\/?([^\s\[\]\(\)\*\_]*)/";
 
 	/**
-	 * @param array $domainList
+	 * The timeout for HTTP connections
+	 * @var int
 	 */
-	public function __construct(array $domainList)
+	protected int $timeout;
+
+	/**
+	 * The maximum number of iterations to unshort a URL
+	 * @var int
+	 */
+	protected int $maxIterations;
+
+	/**
+	 * @param array $domainList
+	 * @param int $timeout
+	 * @param int $maxIterations
+	 */
+	public function __construct(array $domainList, int $timeout, int $maxIterations)
 	{
 		$this->domainList = $domainList;
+		$this->timeout = $timeout;
+		$this->maxIterations = $maxIterations;
 	}
 
 	/**
@@ -29,8 +45,11 @@ class UnShortURLs
 	 * @param string $url
 	 * @return string
 	 */
-	public function unShort(string $url): string
+	public function unShort(string $url, int $iterationsCount = 0): string
 	{
+		if($iterationsCount >= $this->maxIterations)
+			return $url;
+
 		preg_match(self::$urlRegEx, $url, $match);
 
 		// return if not whitelisted
@@ -40,6 +59,7 @@ class UnShortURLs
 		$request = curl_init($url);
 		curl_setopt($request, CURLOPT_FOLLOWLOCATION, false);
 		curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($request, CURLOPT_TIMEOUT, $this->timeout);
 		curl_exec($request);
 		$statusCode = curl_getinfo($request, CURLINFO_HTTP_CODE);
 		$redirectUrl = curl_getinfo($request, CURLINFO_REDIRECT_URL);
@@ -47,7 +67,7 @@ class UnShortURLs
 
 		// recursion
 		if($statusCode >= 300 && $statusCode < 400)
-			return $this->unShort($redirectUrl);
+			return $this->unShort($redirectUrl, $iterationsCount + 1);
 
 		return $url;
 	}

@@ -22,7 +22,9 @@ return [
     new Extend\Locales(__DIR__."/locale"),
 
 	(new Extend\Settings)
-		->default("matteociaroni-unshort-urls.domains", ""),
+		->default("matteociaroni-unshort-urls.domains", "")
+		->default("matteociaroni-unshort-urls.timeout", 2)
+		->default("matteociaroni-unshort-urls.max_iterations", 1),
 
 	(new Extend\Event)
 		->listen(Saving::class, ChangePostText::class),

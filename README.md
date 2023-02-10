@@ -7,8 +7,6 @@ A [Flarum](http://flarum.org) extension to unshort shortened URLs (bit.ly, youtu
 ## Features
 After the user creates a new post or a new discussion, the extension replaces immediately the URL, so the post is saved into the database directly with the unshorted URL.
 
-It is possible to customize the list of shortened URL domains in the settings page.
-
 ![Settings](https://raw.githubusercontent.com/matteociaroni/flarum-unshort-urls/master/settings.png)
 
 ## Installation

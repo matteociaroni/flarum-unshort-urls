@@ -3,3 +3,7 @@ matteociaroni-unshort-urls:
     settings:
       domains_label: Domains
       domains_help: Write all the domains to unshort (separated by comma ",")
+      timeout_label: Timeout (in seconds)
+      timeout_help: If reached, URL is left as is
+      max_iterations_label: Max iterations
+      max_iterations_help: If reached, URL is left as is. Must be greater than 0
