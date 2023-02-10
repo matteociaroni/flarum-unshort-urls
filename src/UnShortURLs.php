@@ -2,6 +2,10 @@
 
 namespace MatteoCiaroni\UnShortURLs;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\UriResolver;
+use GuzzleHttp\Psr7\Utils;
+
 class UnShortURLs
 {
 	/**
@@ -43,32 +47,27 @@ class UnShortURLs
 	/**
 	 * If the domain is whitelisted, unshort the url
 	 * @param string $url
+	 * @param int $iterationsCount
 	 * @return string
 	 */
 	public function unShort(string $url, int $iterationsCount = 0): string
 	{
-		if($iterationsCount >= $this->maxIterations)
-			return $url;
-
 		preg_match(self::$urlRegEx, $url, $match);
 
-		// return if not whitelisted
-		if(!in_array($match[1], $this->domainList))
+		// return if not whitelisted or if max iteration is reached
+		if(!in_array($match[1], $this->domainList) || $iterationsCount >= $this->maxIterations)
 			return $url;
 
-		$request = curl_init($url);
-		curl_setopt($request, CURLOPT_FOLLOWLOCATION, false);
-		curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($request, CURLOPT_TIMEOUT, $this->timeout);
-		curl_exec($request);
-		$statusCode = curl_getinfo($request, CURLINFO_HTTP_CODE);
-		$redirectUrl = curl_getinfo($request, CURLINFO_REDIRECT_URL);
-		curl_close($request);
+		$response = (new Client(["timeout" => $this->timeout, "allow_redirects" => false]))->get($url);
 
 		// recursion
-		if($statusCode >= 300 && $statusCode < 400)
-			return $this->unShort($redirectUrl, $iterationsCount + 1);
+		if($response->getStatusCode() >= 300 && $response->getStatusCode() < 400)
+		{
+			// get the absolute URL from location header
+			$newUrl =  self::resolveURL($url, $response->getHeader("Location")[0]);
 
+			return $this->unShort($newUrl, $iterationsCount + 1);
+		}
 		return $url;
 	}
 
@@ -85,5 +84,16 @@ class UnShortURLs
 			$text = str_replace($oldUrl, $this->unShort($oldUrl), $text);
 
 		return $text;
+	}
+
+	/**
+	 * Get the absolute URL from a base URL and another URL, relative to the previous one
+	 * @param string $base the base URL
+	 * @param string $relative the URL relative to the base URL
+	 * @return string
+	 */
+	protected static function resolveURL(string $base, string $relative): string
+	{
+		return (string) UriResolver::resolve(Utils::uriFor($base), Utils::uriFor($relative));
 	}
 }
