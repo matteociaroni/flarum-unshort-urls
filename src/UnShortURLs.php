@@ -3,6 +3,7 @@
 namespace MatteoCiaroni\UnShortURLs;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\UriResolver;
 use GuzzleHttp\Psr7\Utils;
 
@@ -58,16 +59,21 @@ class UnShortURLs
 		if(!in_array($match[1], $this->domainList) || $iterationsCount >= $this->maxIterations)
 			return $url;
 
-		$response = (new Client(["timeout" => $this->timeout, "allow_redirects" => false]))->get($url);
-
-		// recursion
-		if($response->getStatusCode() >= 300 && $response->getStatusCode() < 400)
+		try
 		{
-			// get the absolute URL from location header
-			$newUrl =  self::resolveURL($url, $response->getHeader("Location")[0]);
+			$response = (new Client(["timeout" => $this->timeout, "allow_redirects" => false]))->get($url);
 
-			return $this->unShort($newUrl, $iterationsCount + 1);
+			// recursion
+			if($response->getStatusCode() >= 300 && $response->getStatusCode() < 400)
+			{
+				// get the absolute URL from location header
+				$newUrl =  self::resolveURL($url, $response->getHeader("Location")[0]);
+
+				return $this->unShort($newUrl, $iterationsCount + 1);
+			}
 		}
+		catch (GuzzleException) {}
+
 		return $url;
 	}
 
