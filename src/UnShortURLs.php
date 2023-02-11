@@ -16,12 +16,6 @@ class UnShortURLs
 	protected array $domainList;
 
 	/**
-	 * The regular expression to find urls
-	 * @var string
-	 */
-	protected static string $urlRegEx = "/https?:\/\/([^\/\s]+)\/?([^\s\[\]\(\)\*\_]*)/";
-
-	/**
 	 * The timeout for HTTP connections
 	 * @var int
 	 */
@@ -53,10 +47,10 @@ class UnShortURLs
 	 */
 	public function unShort(string $url, int $iterationsCount = 0): string
 	{
-		preg_match(self::$urlRegEx, $url, $match);
+		$host = parse_url($url)["host"];
 
 		// return if not whitelisted or if max iteration is reached
-		if(!in_array($match[1], $this->domainList) || $iterationsCount >= $this->maxIterations)
+		if(!in_array($host, $this->domainList) || $iterationsCount >= $this->maxIterations)
 			return $url;
 
 		try
@@ -84,9 +78,9 @@ class UnShortURLs
 	 */
 	public function replaceURLs(string $text): string
 	{
-		preg_match_all(self::$urlRegEx, $text, $urls);
+		preg_match_all("/https?:\/\/([^\/\s]+)\/?([^\s\[\]\(\)\*\_]*)/", $text, $urls);
 
-		foreach ($urls[0] as $oldUrl)
+		foreach (array_unique($urls[0]) as $oldUrl)
 			$text = str_replace($oldUrl, $this->unShort($oldUrl), $text);
 
 		return $text;
